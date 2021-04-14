@@ -1,0 +1,20 @@
+version: '3.0'
+ 
+services:
+   db:
+     image: mysql:8.0
+     environment:
+       MYSQL_RANDOM_ROOT_PASSWORD: 1
+       MYSQL_DATABASE: hackathon_schema
+       MYSQL_USER: dbuser
+       MYSQL_PASSWORD: dbuserpassword
+     volumes:
+       - dbdata:/var/lib/mysql
+       - ./DeploymentScripts:/docker-entrypoint-initdb.d
+     restart: always
+     ports:
+       - "3506:3306"
+
+
+volumes:
+   dbdata:
