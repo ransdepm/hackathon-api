@@ -81,6 +81,31 @@ namespace Hackathon.Service.Services
             return user;
         }
 
+        public User GetGameUserById(Guid userId)
+        {
+            DataSet ds;
+            using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
+            {
+                ds = d.GetGameUserById(userId);
+            }
+
+            if (ds.Tables[0].Rows?.Count != 1)
+            {
+                return null;
+            }
+
+            DataRow r = ds.Tables[0].Rows[0];
+
+            var user = new User
+            {
+                Id = Guid.Parse(r["Id"].ToString()),
+                Name = r["Name"].ToString()
+            };
+
+            return user;
+
+        }
+
 
         public AdminUser AuthenticateAdmin(string email, string password)
         {
@@ -169,6 +194,30 @@ namespace Hackathon.Service.Services
             {
                 user.Id = d.CreateUser(name);
             }
+
+            return user;
+        }
+
+        public User GetGameUserByName(string name)
+        {
+            DataSet ds;
+            using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
+            {
+                ds = d.GetActiveUserByName(name);
+            }
+
+            if(ds.Tables[0].Rows?.Count != 1)
+            {
+                return null;
+            }
+
+            DataRow r = ds.Tables[0].Rows[0];
+
+            var user = new User
+            {
+                Id = Guid.Parse(r["Id"].ToString()),
+                Name = r["Name"].ToString()
+            };
 
             return user;
         }

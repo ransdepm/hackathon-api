@@ -46,7 +46,7 @@ namespace Hackathon.Service.Controllers
         public IActionResult CreateUser([FromBody] UserModel model)
         {
             if (_userService.ActiveUserExists(model.Name))
-                return BadRequest("Active user already exist in the system with that user name");
+                return Ok("User exists, so you are logging in.");
 
             var user = _userService.CreateUser(model.Name);
 

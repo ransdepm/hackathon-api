@@ -27,6 +27,14 @@ namespace Hackathon.Data
             return ds;
         }
 
+        public DataSet GetGameUserById(Guid userId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetGameUserById", new Dictionary<string, IConvertible>(){
+                    {"pId", userId.ToString()}
+                });
+            return ds;
+        }
+
         public DataSet GetBaseballGames()
         {
             DataSet ds = ExecuteDataSet("uspGetBaseballGames");
@@ -71,6 +79,106 @@ namespace Hackathon.Data
         {
             DataSet ds = ExecuteDataSet("uspGetGameUserByName", new Dictionary<string, IConvertible>(){
                     {"pName", name}
+                });
+            return ds;
+        }
+
+        public DataSet GetMoundGameByBaseballGameId(int baseballGameId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetMoundGameByBaseballGameId", new Dictionary<string, IConvertible>(){
+                    {"pBaseballGameId", baseballGameId}
+                });
+            return ds;
+        }
+
+        public DataSet GetMoundResultById(int moundResultId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetMoundResultById", new Dictionary<string, IConvertible>(){
+                    {"pMoundResultId", moundResultId}
+                });
+            return ds;
+        }
+
+        public DataSet GetMoundGameResults(int moundGameId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetMoundResults", new Dictionary<string, IConvertible>(){
+                    {"pMoundGameId", moundGameId}
+                });
+            return ds;
+        }
+
+        public int StartNextMoundRound(int moundGameId)
+        {
+            var parameters = new Dictionary<string, IConvertible>()
+            {
+                {"pMoundGameId", moundGameId}
+            };
+
+            var id = InsertDataReturnId("uspCreateMoundResult", parameters);
+            return id;
+        }
+
+        public void LockMoundRound(int moundGameId)
+        {
+            var parameters = new Dictionary<string, IConvertible>()
+            {
+                {"pMoundResultId", moundGameId}
+            };
+
+            InsertData("uspLockMoundResult", parameters);
+        }
+
+        public void AddMoundResult(int moundResultId, string moundResult)
+        {
+            var parameters = new Dictionary<string, IConvertible>()
+            {
+                {"pMoundResultId", moundResultId},
+                {"pMoundResult", moundResult},
+            };
+
+            InsertData("uspAddMoundResult", parameters);
+        }
+
+        public int AddUserMoundResult(int id, Guid userId, string submission)
+        {
+            return InsertDataReturnId("uspAddUserMoundResult", new Dictionary<string, IConvertible>(){
+                    {"pMoundResultId", id},
+                    {"pGameUserId", userId.ToString()},
+                    {"pSubmission",submission}
+                });
+        }
+
+        public DataSet GetUserMoundResultByIds(int id, Guid userId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetUserMoundResultById", new Dictionary<string, IConvertible>(){
+                    {"pMoundResultId", id},
+                    {"pGameUserId", userId.ToString()}
+                });
+            return ds;
+        }
+
+        public void UpdateUserMoundResult(int id, Guid userId, string submission)
+        {
+            InsertData("uspUpdateUserMoundResult", new Dictionary<string, IConvertible>(){
+                    {"pMoundResultId", id},
+                    {"pGameUserId", userId.ToString()},
+                    {"pSubmission",submission}
+                });
+        }
+
+        public DataSet GetUserResultsByMoundGame(int moundGameId, Guid userId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetUserResultsByMoundGame", new Dictionary<string, IConvertible>(){
+                    {"pMoundGameId", moundGameId},
+                    {"pGameUserId", userId.ToString()}
+                });
+            return ds;
+        }
+
+        public DataSet GetAllResultsByMoundGame(int moundGameId)
+        {
+            DataSet ds = ExecuteDataSet("uspGetAllResultsByMoundGame", new Dictionary<string, IConvertible>(){
+                    {"pMoundGameId", moundGameId}
                 });
             return ds;
         }

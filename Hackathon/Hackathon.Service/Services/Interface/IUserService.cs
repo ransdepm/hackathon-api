@@ -16,6 +16,8 @@ namespace Hackathon.Service.Services.Interface
         public AdminUser CreateAdminUser(string email, string password);
         public AdminUser GetActiveAdminUserByEmail(string email);
 
+        public User GetGameUserById(Guid userId);
+        public User GetGameUserByName(string name);
         public bool ActiveUserExists(string name);
         public User CreateUser(string name);
     }
