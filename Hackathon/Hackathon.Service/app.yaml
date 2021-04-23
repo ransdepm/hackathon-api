@@ -1,9 +1,9 @@
 runtime: aspnetcore
 env: flex
 beta_settings:
-    cloud_sql_instances: "youtapia-6ea8d:us-east1:mysql-youtapia=tcp:3306"
+    cloud_sql_instances: "hackathon-ascendum:us-east1:hackathon=tcp:3306"
 env_variables:
-    AppSettings__MySqlConnectionString: "Host=cloudsql;Uid=pransdell;Pwd=password1;Database=youtapia_schema;"
+    AppSettings__ConnectionString: "Host=cloudsql;Uid=pransdell;Pwd=password1;Database=hackathon_schema;"
 
 manual_scaling:
   instances: 1

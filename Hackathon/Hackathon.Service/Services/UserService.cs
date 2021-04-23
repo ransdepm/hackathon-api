@@ -27,7 +27,7 @@ namespace Hackathon.Service.Services
             _hostEnvironment = hostEnvironment;
         }
 
-        public User LoginAdminUser(AdminUserLoginModel loginModel)
+        public AdminUser LoginAdminUser(AdminUserLoginModel loginModel)
         {
             DataSet ds;
             using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
@@ -41,14 +41,14 @@ namespace Hackathon.Service.Services
             }
 
             var r = ds.Tables[0].Rows[0];
-            User user = ValidateAdminUser(r, loginModel);
+            AdminUser user = ValidateAdminUser(r, loginModel);
 
             return user;
         }
 
-        public User GetCurrentAdminUser(ClaimsIdentity claimsIdentity)
+        public AdminUser GetCurrentAdminUser(ClaimsIdentity claimsIdentity)
         {
-            var user = new User();
+            var user = new AdminUser();
 
             if (claimsIdentity != null)
             {
@@ -63,7 +63,7 @@ namespace Hackathon.Service.Services
             return user;
         }
 
-        public User GetAdminUserById(Guid userId)
+        public AdminUser GetAdminUserById(Guid userId)
         {
             DataSet ds;
             using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
@@ -82,7 +82,7 @@ namespace Hackathon.Service.Services
         }
 
 
-        public User AuthenticateAdmin(string email, string password)
+        public AdminUser AuthenticateAdmin(string email, string password)
         {
             var model = new AdminUserLoginModel
             {
@@ -95,7 +95,7 @@ namespace Hackathon.Service.Services
         }
 
 
-        public bool ActiveUserExists(string email)
+        public bool ActiveAdminUserExists(string email)
         {
             DataSet ds;
             using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
@@ -106,7 +106,7 @@ namespace Hackathon.Service.Services
             return (ds.Tables[0].Rows.Count > 0);
         }
 
-        public User GetActiveAdminUserByEmail(string email)
+        public AdminUser GetActiveAdminUserByEmail(string email)
         {
             DataSet ds;
             using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
@@ -127,9 +127,9 @@ namespace Hackathon.Service.Services
             return user;
         }
 
-        public User CreateAdminUser(string email, string password)
+        public AdminUser CreateAdminUser(string email, string password)
         {
-            var user = new User
+            var user = new AdminUser
             {
                 Email = email,
             };
@@ -147,10 +147,36 @@ namespace Hackathon.Service.Services
             return user;
         }
 
+        public bool ActiveUserExists(string name)
+        {
+            DataSet ds;
+            using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
+            {
+                ds = d.GetActiveUserByName(name);
+            }
 
-        private User ParseAdminUser(DataRow r)
+            return (ds.Tables[0].Rows.Count > 0);
+        }
+
+        public User CreateUser(string name)
         {
             var user = new User
+            {
+                Name = name,
+            };
+
+            using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
+            {
+                user.Id = d.CreateUser(name);
+            }
+
+            return user;
+        }
+
+
+        private AdminUser ParseAdminUser(DataRow r)
+        {
+            var user = new AdminUser
             {
                 Id = Guid.Parse(r["Id"].ToString()),
                 Email = r["Email"].ToString(),
@@ -161,9 +187,9 @@ namespace Hackathon.Service.Services
         }
 
 
-        private User ValidateAdminUser(DataRow r, AdminUserLoginModel loginModel)
+        private AdminUser ValidateAdminUser(DataRow r, AdminUserLoginModel loginModel)
         {
-            User user = ParseAdminUser(r);
+            AdminUser user = ParseAdminUser(r);
             var storedPasswordHash = Encoding.Default.GetString((byte[])r["PasswordHash"]);
             var storedSalt = r["Salt"].ToString();
 

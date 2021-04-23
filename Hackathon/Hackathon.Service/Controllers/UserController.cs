@@ -28,11 +28,11 @@ namespace Hackathon.Service.Controllers
         }
 
         [AllowAnonymous]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(AdminUser), 200)]
         [HttpPost("admin")]
-        public IActionResult CreateUser([FromBody]AdminUserModel model)
+        public IActionResult CreateAdminUser([FromBody]AdminUserModel model)
         {
-            if (_userService.ActiveUserExists(model.Email))
+            if (_userService.ActiveAdminUserExists(model.Email))
                 return BadRequest("Active user already exist in the system with that email address");
 
             var user = _userService.CreateAdminUser(model.Email, model.Password);
@@ -41,7 +41,20 @@ namespace Hackathon.Service.Controllers
         }
 
         [AllowAnonymous]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(AdminUser), 200)]
+        [HttpPost]
+        public IActionResult CreateUser([FromBody] UserModel model)
+        {
+            if (_userService.ActiveUserExists(model.Name))
+                return BadRequest("Active user already exist in the system with that user name");
+
+            var user = _userService.CreateUser(model.Name);
+
+            return Ok(user);
+        }
+
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(AdminUser), 200)]
         [HttpPost("admin/login")]
         public IActionResult AdminLogin([FromBody]AdminUserLoginModel model)
         {
@@ -57,7 +70,7 @@ namespace Hackathon.Service.Controllers
         }
 
         [Authorize]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(AdminUser), 200)]
         [HttpGet("me")]
         public IActionResult GetUser()
         {

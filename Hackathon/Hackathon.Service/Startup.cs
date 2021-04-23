@@ -61,6 +61,7 @@ namespace Hackathon.Service
             // Services
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IAdminService, AdminService>();
+            services.AddSingleton<IGameService, GameService>();
 
 
             services.AddHealthChecks();
@@ -119,7 +120,7 @@ namespace Hackathon.Service
 
             app.UseCors("AllowAnyOrigin");
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

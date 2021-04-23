@@ -29,7 +29,7 @@ namespace Hackathon.Service.Controllers
         public IActionResult GetTest()
         {
             var message = _adminService.GetMessage();
-            return Ok("Let's Get Hacking!");
+            return Ok(message);
         }
 
         

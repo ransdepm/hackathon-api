@@ -17,6 +17,7 @@ namespace Hackathon.Service.Services
 
         public string GetMessage()
         {
+            System.Console.WriteLine($"appsetttings connections string: {_appSettings.ConnectionString}");
             using DataAccess d = new DataAccess(_appSettings.ConnectionString);
             DataSet ds = d.GetMessages();
 

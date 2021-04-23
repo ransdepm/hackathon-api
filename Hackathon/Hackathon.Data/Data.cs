@@ -25,7 +25,12 @@ namespace Hackathon.Data
                     {"pId", userId.ToString()}
                 });
             return ds;
+        }
 
+        public DataSet GetBaseballGames()
+        {
+            DataSet ds = ExecuteDataSet("uspGetBaseballGames");
+            return ds;
         }
 
         public Guid CreateAdminUser(string email, string passwordHash, Guid salt)
@@ -46,6 +51,27 @@ namespace Hackathon.Data
         public DataSet GetMessages()
         {
             DataSet ds = ExecuteDataSet("uspGetMessages");
+            return ds;
+        }
+
+        public Guid CreateUser(string name)
+        {
+            Guid id = Guid.NewGuid();
+            var parameters = new Dictionary<string, IConvertible>()
+            {
+                {"pId", id.ToString()},
+                {"pName", name}
+            };
+
+            InsertData("uspAddGameUser", parameters);
+            return id;
+        }
+
+        public DataSet GetActiveUserByName(string name)
+        {
+            DataSet ds = ExecuteDataSet("uspGetGameUserByName", new Dictionary<string, IConvertible>(){
+                    {"pName", name}
+                });
             return ds;
         }
     }

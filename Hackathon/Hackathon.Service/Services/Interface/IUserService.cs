@@ -8,12 +8,15 @@ namespace Hackathon.Service.Services.Interface
 {
     public interface IUserService
     {
-        public User LoginAdminUser(AdminUserLoginModel loginModel);
-        public User GetCurrentAdminUser(ClaimsIdentity claimsIdentity);
-        public User GetAdminUserById(Guid userId);
-        public User AuthenticateAdmin(string email, string password);
-        public bool ActiveUserExists(string email);
-        public User CreateAdminUser(string email, string password);
-        public User GetActiveAdminUserByEmail(string email);
+        public AdminUser LoginAdminUser(AdminUserLoginModel loginModel);
+        public AdminUser GetCurrentAdminUser(ClaimsIdentity claimsIdentity);
+        public AdminUser GetAdminUserById(Guid userId);
+        public AdminUser AuthenticateAdmin(string email, string password);
+        public bool ActiveAdminUserExists(string email);
+        public AdminUser CreateAdminUser(string email, string password);
+        public AdminUser GetActiveAdminUserByEmail(string email);
+
+        public bool ActiveUserExists(string name);
+        public User CreateUser(string name);
     }
 }
