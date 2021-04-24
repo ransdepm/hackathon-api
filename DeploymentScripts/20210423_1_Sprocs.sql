@@ -97,12 +97,59 @@ BEGIN
         Id, 
         HomeTeam,
         HomeTeamLogo,
+        HomeTeamRuns,
         AwayTeam,
         AwayTeamLogo,
+        AwayTeamRuns,
         StartDate,
-        Status
+        Status,
+        Inning,
+        InningHalf,
+        ExternalGameId
     FROM BaseballGame
     WHERE DATE(StartDate) = CURDATE();
+END;;
+
+DROP PROCEDURE IF EXISTS uspGetBaseballGameById;;
+
+CREATE PROCEDURE uspGetBaseballGameById(IN pId INT)
+BEGIN
+    SELECT 
+        Id, 
+        HomeTeam,
+        HomeTeamLogo,
+        HomeTeamRuns,
+        AwayTeam,
+        AwayTeamLogo,
+        AwayTeamRuns,
+        StartDate,
+        Status,
+        Inning,
+        InningHalf,
+        ExternalGameId
+    FROM BaseballGame
+    WHERE Id = pId;
+END;;
+
+DROP PROCEDURE IF EXISTS uspGetBaseballGameByExternalId;;
+
+CREATE PROCEDURE uspGetBaseballGameByExternalId(IN pId INT)
+BEGIN
+    SELECT 
+        Id, 
+        HomeTeam,
+        HomeTeamLogo,
+        HomeTeamRuns,
+        AwayTeam,
+        AwayTeamLogo,
+        AwayTeamRuns,
+        StartDate,
+        Status,
+        Inning,
+        InningHalf,
+        ExternalGameId
+    FROM BaseballGame
+    WHERE ExternalGameId = pId;
 END;;
 
 DROP PROCEDURE IF EXISTS uspCreateBaseballGame;;
@@ -112,18 +159,56 @@ CREATE PROCEDURE uspCreateBaseballGame(IN pHomeTeam VARCHAR(250),
                                        IN pAwayTeam VARCHAR(250),
                                        IN pAwayTeamLogo VARCHAR(250),
                                        IN pStartDate DATETIME,
+                                       IN pStatus VARCHAR(250),
+                                       IN pHomeTeamRuns INT,
+                                       IN pAwayTeamRuns INT,
+                                       IN pInning INT,
+                                       IN pInningHalf VARCHAR(10),
+                                       IN pExternalGameId INT,
                                        OUT new_record INT)
 BEGIN
-    INSERT INTO BaseballGame (HomeTeam, HomeTeamLogo, AwayTeam, AwayTeamLogo, StartDate, Status)
-    VALUES (pHomeTeam, pHomeTeamLogo, pAwayTeam, pAwayTeamLogo, pStartDate, 'PENDING');
+    INSERT INTO BaseballGame (HomeTeam, HomeTeamLogo, HomeTeamRuns, AwayTeam, AwayTeamLogo, AwayTeamRuns, StartDate, Status, Inning, InningHalf, ExternalGameId)
+    VALUES (pHomeTeam, pHomeTeamLogo, pHomeTeamRuns, pAwayTeam, pAwayTeamLogo, pAwayTeamRuns, pStartDate, pStatus, pInning, pInningHalf, pExternalGameId);
     
     SELECT LAST_INSERT_ID() INTO new_record;
     
-    INSERT INTO MoundGame (Status, pBaseballGameId)
+    INSERT INTO MoundGame (Status, BaseballGameId)
     VALUES ('STARTED', new_record);
     
     INSERT INTO MoundResult (Status, MoundGameId)
     VALUES ('PENDING', LAST_INSERT_ID());
+END;;
+
+DROP PROCEDURE IF EXISTS uspUpdateBaseballGame;;
+
+CREATE PROCEDURE uspUpdateBaseballGame(IN pHomeTeam VARCHAR(250),
+                                       IN pHomeTeamLogo VARCHAR(250),
+                                       IN pAwayTeam VARCHAR(250),
+                                       IN pAwayTeamLogo VARCHAR(250),
+                                       IN pStartDate DATETIME,
+                                       IN pStatus VARCHAR(250),
+                                       IN pHomeTeamRuns INT,
+                                       IN pAwayTeamRuns INT,
+                                       IN pInning INT,
+                                       IN pInningHalf VARCHAR(10),
+                                       IN pExternalGameId INT,
+                                       OUT new_record INT)
+BEGIN
+    UPDATE BaseballGame
+    SET HomeTeam = pHomeTeam,
+        HomeTeamLogo = pHomeTeamLogo,
+        HomeTeamRuns = pHomeTeamRuns,
+        AwayTeam = pAwayTeam,
+        AwayTeamLogo = pAwayTeamLogo,
+        AwayTeamRuns = pAwayTeamRuns,
+        StartDate = pStartDate,
+        Status = pStatus,
+        Inning = pInning,
+        InningHalf = pInningHalf
+    WHERE ExternalGameId = pExternalGameId;
+    
+    SELECT Id FROM BaseballGame WHERE ExternalGameId = pExternalGameId INTO new_record;
+
 END;;
 
 DROP PROCEDURE IF EXISTS uspGetMoundGameByBaseballGameId;;

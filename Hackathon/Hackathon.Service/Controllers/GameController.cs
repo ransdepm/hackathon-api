@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hackathon.Service.Controllers
 {
@@ -40,8 +41,8 @@ namespace Hackathon.Service.Controllers
         [HttpGet("{id}/moundGame")]
         public IActionResult GetMoundGame(int id)
         {
-            var message = _gameService.GetMoundGame(id);
-            return Ok(message);
+            var game = _gameService.GetMoundGame(id);
+            return Ok(game);
         }
 
         [AllowAnonymous]
@@ -115,6 +116,16 @@ namespace Hackathon.Service.Controllers
         public IActionResult GetAllMoundGameResults(int moundGameId)
         {
             List<MoundGameTotals> results = _gameService.GetAllMoundGameResults(moundGameId);
+            return Ok(results);
+        }
+
+
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(List<BaseballGame>), 200)]
+        [HttpGet("update")]
+        public async Task<IActionResult> UpdateGames()
+        {
+            var results = await _gameService.UpdateGames();
             return Ok(results);
         }
 

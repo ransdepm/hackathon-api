@@ -2,6 +2,7 @@
 using Hackathon.Service.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hackathon.Service.Services.Interface
 {
@@ -16,5 +17,6 @@ namespace Hackathon.Service.Services.Interface
         public UserMoundGameSubmission StoreUserMoundResult(int id, Guid userId, UserResultModel model);
         public List<UserMoundGameResult> GetMoundGameResultsForUser(int moundGameId, Guid id);
         public List<MoundGameTotals> GetAllMoundGameResults(int moundGameId);
+        public Task<List<BaseballGame>> UpdateGames();
     }
 }

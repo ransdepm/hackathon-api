@@ -16,6 +16,8 @@ using Serilog;
 using Hackathon.Service.Configuration;
 using Hackathon.Service.Services;
 using Hackathon.Service.Services.Interface;
+using Hackathon.Service.Repositories;
+using Hackathon.Service.Repositories.Interface;
 
 namespace Hackathon.Service
 {
@@ -62,6 +64,8 @@ namespace Hackathon.Service
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IAdminService, AdminService>();
             services.AddSingleton<IGameService, GameService>();
+
+            services.AddSingleton<ISportsDataApiRepository, SportsDataApiRepository>();
 
 
             services.AddHealthChecks();

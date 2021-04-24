@@ -62,6 +62,14 @@ namespace Hackathon.Data
             return ds;
         }
 
+        public DataSet GetBaseballGameById(int id)
+        {
+            DataSet ds = ExecuteDataSet("uspGetBaseballGameById", new Dictionary<string, IConvertible>(){
+                    {"pId", id}
+                });
+            return ds;
+        }
+
         public Guid CreateUser(string name)
         {
             Guid id = Guid.NewGuid();
@@ -181,6 +189,65 @@ namespace Hackathon.Data
                     {"pMoundGameId", moundGameId}
                 });
             return ds;
+        }
+
+        public int UpsertBaseballGame(int externalGameId, string homeTeam, string homeTeamLogo, int homeTeamRuns, string awayTeam, 
+            string awayTeamLogo, int awayTeamRuns, string status, DateTime? startDate, int inning, string inningHalf)
+        {
+            return InsertDataReturnId("uspUpsertBaseballGame", new Dictionary<string, IConvertible>(){
+                {"pMoundResultId", homeTeam},
+                {"pGameUserId", homeTeamLogo},
+                {"pSubmission",homeTeamRuns},
+                {"pMoundResultId", awayTeam},
+                {"pGameUserId", awayTeamLogo},
+                {"pSubmission",awayTeamRuns},
+                {"pMoundResultId", status},
+                {"pGameUserId", startDate.ToString()},
+                {"pSubmission",inning},
+                {"pSubmission",inningHalf}
+            });
+        }
+
+        public DataSet GetBaseballGameByExternalId(int externalId)
+        {
+            return ExecuteDataSet("uspGetBaseballGameByExternalId", new Dictionary<string, IConvertible>(){
+                {"pId", externalId} });
+        }
+
+        public int CreateBaseballGame(int externalGameId, string homeTeam, string homeTeamLogo, int? homeTeamRuns, string awayTeam, string awayTeamLogo, 
+            int? awayTeamRuns, string status, DateTime startDate, int? inning, string inningHalf)
+        {
+            return InsertDataReturnId("uspCreateBaseballGame", new Dictionary<string, IConvertible>(){
+                {"pHomeTeam", homeTeam},
+                {"pHomeTeamLogo", homeTeamLogo},
+                {"pAwayTeam",awayTeam},
+                {"pAwayTeamLogo", awayTeamLogo},
+                {"pStartDate", startDate.ToString("yyyy-MM-dd HH:mm:ss")},
+                {"pStatus", status},
+                {"pHomeTeamRuns", homeTeamRuns},
+                {"pAwayTeamRuns", awayTeamRuns},
+                {"pInning",inning},
+                {"pInningHalf",inningHalf},
+                {"pExternalGameId",externalGameId}
+            });
+        }
+
+        public int UpdateBaseballGame(int externalGameId, string homeTeam, string homeTeamLogo, int? homeTeamRuns, string awayTeam, string awayTeamLogo,
+            int? awayTeamRuns, string status, DateTime startDate, int? inning, string inningHalf)
+        {
+            return InsertDataReturnId("uspUpdateBaseballGame", new Dictionary<string, IConvertible>(){
+                {"pHomeTeam", homeTeam},
+                {"pHomeTeamLogo", homeTeamLogo},
+                {"pAwayTeam",awayTeam},
+                {"pAwayTeamLogo", awayTeamLogo},
+                {"pStartDate", startDate.ToString("yyyy-MM-dd HH:mm:ss")},
+                {"pStatus", status},
+                {"pHomeTeamRuns", homeTeamRuns},
+                {"pAwayTeamRuns", awayTeamRuns},
+                {"pInning",inning},
+                {"pInningHalf",inningHalf},
+                {"pExternalGameId",externalGameId}
+            });
         }
     }
 }

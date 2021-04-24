@@ -8,15 +8,19 @@ using Hackathon.Entities;
 using System;
 using Hackathon.Service.Utilities;
 using Hackathon.Service.Models;
+using Hackathon.Service.Repositories.Interface;
+using System.Threading.Tasks;
 
 namespace Hackathon.Service.Services
 {
     public class GameService : IGameService
     {
-
+        private readonly ISportsDataApiRepository _sportsDataApiRepository;
         private readonly AppSettings _appSettings;
-        public GameService(IOptions<AppSettings> appSettings)
+        public GameService(ISportsDataApiRepository sportsDataApiRepository, 
+                           IOptions<AppSettings> appSettings)
         {
+            _sportsDataApiRepository = sportsDataApiRepository;
             _appSettings = appSettings.Value;
         }
 
@@ -36,15 +40,46 @@ namespace Hackathon.Service.Services
                     Id = Convert.ToInt32(r["Id"]),
                     HomeTeam = r["HomeTeam"].ToString(),
                     HomeTeamLogo = r["HomeTeamLogo"].ToString(),
+                    HomeTeamRuns = DatabaseUtility.ReadNullableInt(r, "HomeTeamRuns"),
                     AwayTeam = r["AwayTeam"].ToString(),
                     AwayTeamLogo = r["AwayTeamLogo"].ToString(),
+                    AwayTeamRuns = DatabaseUtility.ReadNullableInt(r, "AwayTeamRuns"),
                     Status = r["Status"].ToString(),
-                    StartDate = DatabaseUtility.ReadDateTimeUTC(r, "StartDate")
+                    StartDate = DatabaseUtility.ReadDateTimeUTC(r, "StartDate").Value,
+                    Inning = DatabaseUtility.ReadNullableInt(r, "Inning"),
+                    InningHalf = r["AwayTeam"].ToString(),
                 };
                 games.Add(game);
 
             }
             return games;
+        }
+
+        public BaseballGame GetBaseballGameById(int id)
+        {
+            DataSet ds;
+            using (DataAccess d = new DataAccess(_appSettings.ConnectionString))
+            {
+                ds = d.GetBaseballGameById(id);
+            }
+
+            if (ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            DataRow r = ds.Tables[0].Rows[0];
+
+            var game = new BaseballGame
+            {
+                Id = Convert.ToInt32(r["Id"]),
+                HomeTeam = r["HomeTeam"].ToString(),
+                HomeTeamLogo = r["HomeTeamLogo"].ToString(),
+                AwayTeam = r["AwayTeam"].ToString(),
+                AwayTeamLogo = r["AwayTeamLogo"].ToString(),
+                Status = r["Status"].ToString(),
+                StartDate = DatabaseUtility.ReadDateTimeUTC(r, "StartDate").Value
+            };
+
+            return game;
         }
 
 
@@ -66,7 +101,8 @@ namespace Hackathon.Service.Services
             {
                 Id = Convert.ToInt32(r["Id"]),
                 Status = r["Status"].ToString(),
-                MoundGameResults = GetMoundResults(moundGameId)
+                MoundGameResults = GetMoundResults(moundGameId),
+                BaseballGame = GetBaseballGameById(baseballGameId)
             };
 
             return game;
@@ -218,6 +254,57 @@ namespace Hackathon.Service.Services
             }
             return results;
 
+        }
+
+        public async Task<List<BaseballGame>> UpdateGames()
+        {
+            var games = await _sportsDataApiRepository.GetTodaysGames();
+            using DataAccess d = new DataAccess(_appSettings.ConnectionString);
+            foreach (var game in games)
+            {
+                int? exist = GetBaseballGameByExternalId(game.ExternalGameId);
+                if (exist == null)
+                {
+                    CreateBaseballGame(game);
+                }
+                else
+                {
+                    UpdateBaseballGame(game);
+                }
+            }
+            return games;
+        }
+
+        public int? GetBaseballGameByExternalId(int externalId)
+        {
+            using DataAccess d = new DataAccess(_appSettings.ConnectionString);
+            DataSet ds = d.GetBaseballGameByExternalId(externalId);
+
+            if (ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            DataRow r = ds.Tables[0].Rows[0];
+
+            var externalGameId = Convert.ToInt32(r["ExternalGameId"]);
+            return externalGameId;
+        }
+
+        public int CreateBaseballGame(BaseballGame game)
+        {
+            using DataAccess d = new DataAccess(_appSettings.ConnectionString);
+            int id = d.CreateBaseballGame(game.ExternalGameId, game.HomeTeam, game.HomeTeamLogo, game.HomeTeamRuns, game.AwayTeam,
+                    game.AwayTeamLogo, game.AwayTeamRuns, game.Status, game.StartDate, game.Inning, game.InningHalf);
+
+            return id;
+        }
+
+        public int UpdateBaseballGame(BaseballGame game)
+        {
+            using DataAccess d = new DataAccess(_appSettings.ConnectionString);
+            int id = d.UpdateBaseballGame(game.ExternalGameId, game.HomeTeam, game.HomeTeamLogo, game.HomeTeamRuns, game.AwayTeam,
+                    game.AwayTeamLogo, game.AwayTeamRuns, game.Status, game.StartDate, game.Inning, game.InningHalf);
+
+            return id;
         }
 
         public UserMoundGameSubmission GetUserMoundResult(int id, Guid userId)

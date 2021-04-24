@@ -10,7 +10,12 @@ namespace Hackathon.Entities
         public string HomeTeamLogo { get; set; }
         public string AwayTeam { get; set; }
         public string AwayTeamLogo { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public string Status { get; set; }
+        public int? AwayTeamRuns { get; set; }
+        public int? HomeTeamRuns { get; set; }
+        public int? Inning { get; set; }
+        public string InningHalf { get; set; }
+        public int ExternalGameId { get; set; }
     }
 }

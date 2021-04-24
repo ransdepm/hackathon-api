@@ -9,5 +9,6 @@ namespace Hackathon.Entities
         public int Id { get; set; }
         public string Status { get; set; }
         public List<MoundGameResult> MoundGameResults { get; set; }
+        public BaseballGame BaseballGame { get; set; }
     }
 }

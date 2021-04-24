@@ -41,10 +41,15 @@ CREATE TABLE BaseballGame (
   Id INT NOT NULL AUTO_INCREMENT,
   HomeTeam VARCHAR(250) NOT NULL,
   HomeTeamLogo VARCHAR(250) NOT NULL,
+  HomeTeamRuns INT NULL,
   AwayTeam VARCHAR(250) NOT NULL,
   AwayTeamLogo VARCHAR(250) NOT NULL,
+  AwayTeamRuns INT NULL,
   StartDate DateTime NOT NULL,
   Status VARCHAR(250) NOT NULL,
+  Inning INT NULL,
+  InningHalf VARCHAR(10) NULL,
+  ExternalGameId INT NULL,
   PRIMARY KEY (Id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
